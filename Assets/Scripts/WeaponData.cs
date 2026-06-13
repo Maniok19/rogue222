@@ -9,6 +9,10 @@ public class WeaponData : ScriptableObject
     public float attackCooldown = 0.5f;
 
     [Header("Hitbox Settings")]
-    public Vector2 hitboxSize = new Vector2(1.2f, 0.8f);   // Width and height of the box
-    public Vector2 hitboxOffset = new Vector2(0.8f, 0f);    // How far in front of the player it spawns
+    public Vector2 hitboxSize = new Vector2(1.2f, 0.8f);   
+    public Vector2 hitboxOffset = new Vector2(0.8f, 0f);    
+
+    [Header("Knockback Settings")]
+    public float knockbackForce = 15f;      // How hard the enemy is pushed back
+    public float knockbackDuration = 0.15f;  // How long the enemy slides backward [1]
 }

@@ -185,7 +185,6 @@ public class PlayerAttack : MonoBehaviour
 
     private void DetectHits(Vector2 attackDir)
     {
-        // Physics checks remain in absolute world coordinates
         float angle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
         Vector3 rotatedOffset = Quaternion.Euler(0, 0, angle) * (Vector3)equippedWeapon.hitboxOffset;
         Vector2 hitboxCenter = (Vector2)transform.position + (Vector2)rotatedOffset;
@@ -199,10 +198,22 @@ public class PlayerAttack : MonoBehaviour
 
         foreach (Collider2D enemy in hitEnemies)
         {
+            // 1. Deal Damage
             IDamageable damageable = enemy.GetComponent<IDamageable>();
             if (damageable != null)
             {
                 damageable.TakeDamage(equippedWeapon.damage);
+            }
+
+            // 2. Apply Knockback (if hit object is a moving Enemy) [1]
+            EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+            if (enemyAI != null)
+            {
+                // Calculate the direction pointing from the player's center to the enemy's center [1]
+                Vector2 knockbackDir = (enemy.transform.position - transform.position).normalized;
+                
+                // Trigger the knockback [1]
+                enemyAI.ApplyKnockback(knockbackDir, equippedWeapon.knockbackForce, equippedWeapon.knockbackDuration);
             }
         }
     }

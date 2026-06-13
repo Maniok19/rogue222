@@ -15,6 +15,8 @@ MonoBehaviour:
   weaponName: Stick
   weaponSprite: {fileID: -781637292573689941, guid: 0a98ac7fb796d1440bb22ad9150c64b2, type: 3}
   damage: 10
-  attackCooldown: 0.5
+  attackCooldown: 0.3
   hitboxSize: {x: 0.75, y: 0.93}
   hitboxOffset: {x: 0.71, y: 0}
+  knockbackForce: 10
+  knockbackDuration: 0.15
