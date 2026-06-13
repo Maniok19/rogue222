@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: be1460af6d64227429cf649e0b03e3d5
+guid: 270ec95aa62159e41a40b4817ee947ba
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 474157242648850938
-    second: rogue222_charactere_side_0
+      213: 5679521259414858893
+    second: rogue222_roomv2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: rogue222_charactere_side_0
+      name: rogue222_roomv2_0
       rect:
         serializedVersion: 2
-        x: 119
-        y: 70
-        width: 246
-        height: 348
+        x: 0
+        y: 0
+        width: 1280
+        height: 800
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: af173cfff7b849600800000000000000
-      internalID: 474157242648850938
+      spriteID: d8ca3b97e76b1de40800000000000000
+      internalID: 5679521259414858893
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      rogue222_charactere_side_0: 474157242648850938
+      rogue222_roomv2_0: 5679521259414858893
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
