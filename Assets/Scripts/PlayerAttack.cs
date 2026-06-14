@@ -105,8 +105,23 @@ public class PlayerAttack : MonoBehaviour
     {
         if (weaponAnchor == null || playerController == null) return;
 
-        Vector2 dir = playerController.LastMoveDirection;
-        WeaponOffset activeOffset = GetActiveOffset(dir);
+        // Detect if the player is currently moving using Unity 6's linearVelocity
+        Rigidbody2D playerRb = GetComponent<Rigidbody2D>();
+        bool isMoving = playerRb != null && playerRb.linearVelocity.sqrMagnitude > 0.05f;
+
+        WeaponOffset activeOffset;
+
+        if (isMoving)
+        {
+            // While walking, use the offset of the walking direction
+            Vector2 dir = playerController.LastMoveDirection;
+            activeOffset = GetActiveOffset(dir);
+        }
+        else
+        {
+            // When stopped walking, force the weapon back to the default front position
+            activeOffset = frontOffset;
+        }
 
         // Apply resting offsets
         weaponAnchor.localPosition = activeOffset.positionOffset;

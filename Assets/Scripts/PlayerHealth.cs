@@ -16,16 +16,27 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public TMP_Text hpText; 
 
     [Header("Juice Visuals")]
-    public SpriteRenderer spriteRenderer;  // Drag your player's SpriteRenderer here [3]
-    public Color flashColor = Color.red;   // Color the player flashes when hit [3]
+    public Color flashColor = Color.red;   // Color the player flashes when hit
+
+    // Automatically caches all puppet parts (head, body, limbs)
+    private SpriteRenderer[] childRenderers; 
 
     private void Start()
     {
         currentHealth = maxHealth;
         UpdateHPUI();
 
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponent<SpriteRenderer>();
+        // 1. Find all sprite renderers specifically under player_rig to avoid flashing weapons
+        Transform rig = transform.Find("player_rig");
+        if (rig != null)
+        {
+            childRenderers = rig.GetComponentsInChildren<SpriteRenderer>();
+        }
+        else
+        {
+            // Fallback if rig is missing
+            childRenderers = GetComponentsInChildren<SpriteRenderer>();
+        }
     }
 
     private void Update()
@@ -49,10 +60,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         UpdateHPUI();
 
-        // 1. Trigger the red flash and transparent blink cycle [3]
+        // Trigger the flash on all cached parts
         StartCoroutine(DamageFlashRoutine());
 
-        // 2. Trigger the camera shake (Duration, Magnitude)
         if (CameraShake.Instance != null)
         {
             CameraShake.Instance.Shake(0.15f, 0.15f); 
@@ -68,31 +78,47 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private IEnumerator DamageFlashRoutine()
     {
-        if (spriteRenderer == null) yield break;
+        if (childRenderers == null || childRenderers.Length == 0) yield break;
 
         Color originalColor = Color.white; 
 
-        // Phase 1: Solid Flash (The instant shock of the impact) [3]
-        spriteRenderer.color = flashColor;
+        // Phase 1: Solid Flash (Turn all puppet parts solid red)
+        SetRenderersColor(flashColor);
         yield return new WaitForSeconds(0.1f); // Hold flash for a split second
 
-        // Phase 2: Rapid Blinking (Represents invincibility state / i-frames) [3]
+        // Phase 2: Rapid Blinking (Blink all parts between transparent and opaque)
         float elapsed = 0.1f;
+        Color transparentColor = new Color(originalColor.r, originalColor.g, originalColor.b, 0.25f);
+
         while (elapsed < invincibilityDuration)
         {
-            // Set to semi-transparent [3]
-            spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.25f);
+            // Set all to semi-transparent
+            SetRenderersColor(transparentColor);
             yield return new WaitForSeconds(0.06f);
             elapsed += 0.06f;
 
-            // Set back to opaque [3]
-            spriteRenderer.color = originalColor;
+            // Set all back to opaque
+            SetRenderersColor(originalColor);
             yield return new WaitForSeconds(0.06f);
             elapsed += 0.06f;
         }
 
-        // Ensure player is fully visible when invincibility ends
-        spriteRenderer.color = originalColor;
+        // Ensure all parts are fully visible when invincibility ends
+        SetRenderersColor(originalColor);
+    }
+
+    // Helper method to update color across all puppet parts at once
+    private void SetRenderersColor(Color color)
+    {
+        if (childRenderers == null) return;
+        
+        for (int i = 0; i < childRenderers.Length; i++)
+        {
+            if (childRenderers[i] != null)
+            {
+                childRenderers[i].color = color;
+            }
+        }
     }
 
     private void UpdateHPUI()

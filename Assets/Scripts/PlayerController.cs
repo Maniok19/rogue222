@@ -3,17 +3,14 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Rig Reference")]
+    public Transform rigTransform; 
     public Vector2 LastMoveDirection { get; private set; } = Vector2.down; // Defaults to facing down/front
     [Header("Movement")]
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
     private Vector2 moveInput;
-
-    [Header("Sprites")]
-    public SpriteRenderer spriteRenderer;
-    public Sprite frontSprite;
-    public Sprite sideSprite;
-    public Sprite backSprite; // Added field for the back sprite
+    private Animator animator; // Added Animator reference
 
     [Header("Smooth Turn Settings")]
     public float turnSpeed = 15f;
@@ -51,14 +48,15 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponent<SpriteRenderer>();
-        
-        if (spriteRenderer != null && frontSprite != null)
-            spriteRenderer.sprite = frontSprite;
+        animator = GetComponent<Animator>();
 
-        originalScaleX = transform.localScale.x;
-        originalScaleY = transform.localScale.y;
+        if (rigTransform == null)
+        {
+            rigTransform = transform.Find("player_rig");
+        }
+
+        originalScaleX = rigTransform != null ? rigTransform.localScale.x : transform.localScale.x;
+        originalScaleY = rigTransform != null ? rigTransform.localScale.y : transform.localScale.y;
         targetScaleX = originalScaleX;
     }
 
@@ -71,12 +69,22 @@ public class PlayerController : MonoBehaviour
             moveInput = moveAction.action.ReadValue<Vector2>();
         }
 
-        if (moveInput.sqrMagnitude > 0.01f)
+        bool isWalking = moveInput.sqrMagnitude > 0.01f;
+
+        if (isWalking)
         {
             LastMoveDirection = moveInput.normalized;
         }
 
-        HandleSpriteTransitions();
+        // Send parameters to the Animator Controller
+        if (animator != null)
+        {
+            animator.SetFloat("moveX", LastMoveDirection.x);
+            animator.SetFloat("moveY", LastMoveDirection.y);
+            animator.SetBool("isWalking", isWalking);
+        }
+
+        HandleFlipping();
         SmoothFlipAndJuice();
     }
 
@@ -85,84 +93,60 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = moveInput * moveSpeed; 
     }
 
-    void HandleSpriteTransitions()
+    void HandleFlipping()
     {
-        // 1. Moving Horizontally takes priority (switches to side sprite)
         if (Mathf.Abs(moveInput.x) > 0.1f)
         {
-            if (sideSprite != null)
-                spriteRenderer.sprite = sideSprite;
-
             if (moveInput.x < 0)
             {
-                targetScaleX = originalScaleX; // Face Left
+                targetScaleX = -originalScaleX; // Face Left
             }
             else
             {
-                targetScaleX = -originalScaleX;  // Face Right
+                targetScaleX = originalScaleX;  // Face Right
+            }
+
+            // Apply scale instantly to prevent near-zero matrix collapses
+            if (rigTransform != null)
+            {
+                Vector3 rigScale = rigTransform.localScale;
+                rigScale.x = targetScaleX;
+                rigTransform.localScale = rigScale;
             }
         }
-        // 2. Moving Vertically (without horizontal movement)
-        else if (Mathf.Abs(moveInput.y) > 0.1f)
-        {
-            if (moveInput.y > 0.1f)
-            {
-                // Moving Upwards -> Set to Back Sprite
-                if (backSprite != null)
-                    spriteRenderer.sprite = backSprite;
-            }
-            else
-            {
-                // Moving Downwards -> Set to Front Sprite
-                if (frontSprite != null)
-                    spriteRenderer.sprite = frontSprite;
-            }
-            
-            targetScaleX = originalScaleX;
-        }
-        // 3. If stationary (idle), we do nothing. The character stays on their last sprite.
     }
 
     void SmoothFlipAndJuice()
     {
-        Vector3 localScale = transform.localScale;
-
         float currentSpeed;
         float currentAmount;
         float targetTilt;
 
         if (moveInput.magnitude > 0.1f)
         {
-            // Walking State values
             currentSpeed = bounceSpeed;
             currentAmount = bounceAmount;
-            
-            // Calculate dynamic step tilt
             targetTilt = Mathf.Sin(bounceTimer) * tiltAmount;
         }
         else
         {
-            // Idle Breathing State values
             currentSpeed = idleBounceSpeed;
             currentAmount = idleBounceAmount;
-            
-            // Reset tilt to upright position when standing still
             targetTilt = 0f;
         }
 
-        // Keep the sine wave timer running
         bounceTimer += Time.deltaTime * currentSpeed;
 
-        // Apply vertical squash & stretch (handling walk or breath seamlessly)
-        float squashY = originalScaleY + (Mathf.Sin(bounceTimer) * currentAmount * originalScaleY);
-        localScale.y = squashY;
+        // Apply squash and stretch safely to the rig instead of root physics
+        if (rigTransform != null)
+        {
+            Vector3 rigScale = rigTransform.localScale;
+            rigScale.y = originalScaleY + (Mathf.Sin(bounceTimer) * currentAmount * originalScaleY);
+            rigTransform.localScale = rigScale;
+        }
 
-        // Apply smooth tilt interpolation so it doesn't snap when stopping
+        // Apply smooth tilt interpolation
         Quaternion targetRotation = Quaternion.Euler(0, 0, targetTilt);
         transform.localRotation = Quaternion.Lerp(transform.localRotation, targetRotation, turnSpeed * Time.deltaTime);
-
-        // Apply horizontal turning scale
-        localScale.x = Mathf.MoveTowards(localScale.x, targetScaleX, turnSpeed * Time.deltaTime);
-        transform.localScale = localScale;
     }
 }

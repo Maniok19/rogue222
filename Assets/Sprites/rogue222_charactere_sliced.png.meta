@@ -1,10 +1,25 @@
 fileFormatVersion: 2
-guid: 307130271b6575845b46a612d589871f
+guid: 3e75cea86704d444c93fbef72084cea9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6563686766074320410
-    second: rogue222_charactere_0
+      213: 885792846355317415
+    second: rogue222_charactere_sliced_0
+  - first:
+      213: 1608574105299070726
+    second: rogue222_charactere_sliced_1
+  - first:
+      213: 8991973930132103281
+    second: rogue222_charactere_sliced_2
+  - first:
+      213: -2178534194118555887
+    second: rogue222_charactere_sliced_3
+  - first:
+      213: -3926688352835307337
+    second: rogue222_charactere_sliced_4
+  - first:
+      213: -3742047675573904228
+    second: rogue222_charactere_sliced_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,172 +111,137 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: rogue222_charactere_0
+      name: rogue222_charactere_sliced_0
       rect:
         serializedVersion: 2
-        x: 122
-        y: 64
-        width: 258
-        height: 365
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 23
+        y: 271
+        width: 238
+        height: 218
+      alignment: 9
+      pivot: {x: 0.48433378, y: 0.029653987}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6e9253389a919e4a0800000000000000
-      internalID: -6563686766074320410
+      spriteID: 7a2479f86e7fa4c00800000000000000
+      internalID: 885792846355317415
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rogue222_charactere_1
+      name: rogue222_charactere_sliced_1
       rect:
         serializedVersion: 2
-        x: 417
-        y: 352
-        width: 43
-        height: 70
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 308
+        y: 358
+        width: 56
+        height: 59
+      alignment: 9
+      pivot: {x: 0.7496801, y: 0.6737893}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 76b91d072e9c71549bcab7d462ace0ff
-      internalID: -639237462
+      spriteID: 60f2e3d40adc25610800000000000000
+      internalID: 1608574105299070726
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rogue222_charactere_2
+      name: rogue222_charactere_sliced_2
       rect:
         serializedVersion: 2
-        x: 132
-        y: 216
-        width: 237
-        height: 210
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 416
+        y: 334
+        width: 56
+        height: 57
+      alignment: 9
+      pivot: {x: 0.2503199, y: 0.69624037}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 89c02c26cbb9cb14ca11297537bd9c17
-      internalID: -555374133
+      spriteID: 170e81fd5a8e9cc70800000000000000
+      internalID: 8991973930132103281
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rogue222_charactere_3
+      name: rogue222_charactere_sliced_3
       rect:
         serializedVersion: 2
-        x: 331
-        y: 145
-        width: 53
-        height: 56
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 392
+        y: 262
+        width: 68
+        height: 45
+      alignment: 9
+      pivot: {x: 0.48629177, y: 0.9349989}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: a9e1c278921448049a8a52f5c11ec12f
-      internalID: 1803194242
+      spriteID: 117858c51ba44c1e0800000000000000
+      internalID: -2178534194118555887
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rogue222_charactere_4
+      name: rogue222_charactere_sliced_4
       rect:
         serializedVersion: 2
-        x: 121
-        y: 144
-        width: 49
-        height: 49
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 27
+        y: 55
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5423699, y: 0.888392}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 7888b217e0eb9f149adaf6bc0329ec75
-      internalID: -1768684760
+      spriteID: 7b876916fb99189c0800000000000000
+      internalID: -3926688352835307337
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rogue222_charactere_5
+      name: rogue222_charactere_sliced_5
       rect:
         serializedVersion: 2
-        x: 166
-        y: 65
-        width: 70
-        height: 41
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 122
+        y: 70
+        width: 241
+        height: 164
+      alignment: 9
+      pivot: {x: 0.55028147, y: 0.2669653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e683c63b7d4e74d4ca932bd365712a44
-      internalID: -1527000517
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: rogue222_charactere_6
-      rect:
-        serializedVersion: 2
-        x: 264
-        y: 64
-        width: 67
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b6a899b6b1ae1d441927faa89bdf6d18
-      internalID: 77964616
+      spriteID: c9c57dc1773911cc0800000000000000
+      internalID: -3742047675573904228
       vertices: []
       indices: 
       edges: []
@@ -270,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: badfe9e09d8d0554e851371a3a5b4a68
+    spriteID: f7fc8b4cd8e0f7446b2ee013809a92db
     internalID: 0
     vertices: []
     indices: 
@@ -280,13 +260,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      rogue222_charactere_0: -6563686766074320410
-      rogue222_charactere_1: -639237462
-      rogue222_charactere_2: -555374133
-      rogue222_charactere_3: 1803194242
-      rogue222_charactere_4: -1768684760
-      rogue222_charactere_5: -1527000517
-      rogue222_charactere_6: 77964616
+      rogue222_charactere_sliced_0: 885792846355317415
+      rogue222_charactere_sliced_1: 1608574105299070726
+      rogue222_charactere_sliced_2: 8991973930132103281
+      rogue222_charactere_sliced_3: -2178534194118555887
+      rogue222_charactere_sliced_4: -3926688352835307337
+      rogue222_charactere_sliced_5: -3742047675573904228
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
