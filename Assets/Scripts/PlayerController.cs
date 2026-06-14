@@ -5,12 +5,14 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Rig Reference")]
     public Transform rigTransform; 
-    public Vector2 LastMoveDirection { get; private set; } = Vector2.down; // Defaults to facing down/front
+    public Vector2 LastMoveDirection { get; private set; } = Vector2.down; // Raw direction
+    public Vector2 SnappedMoveDirection { get; private set; } = Vector2.down; // Snapped direction for visuals
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
     private Vector2 moveInput;
-    private Animator animator; // Added Animator reference
+    private Animator animator;
 
     [Header("Smooth Turn Settings")]
     public float turnSpeed = 15f;
@@ -19,16 +21,16 @@ public class PlayerController : MonoBehaviour
     private float targetScaleX;
 
     [Header("Bouncy Walk Juice")]
-    public float bounceSpeed = 14f;      // Speed of the step cycle
+    public float bounceSpeed = 14f;      
     [Range(0.05f, 0.3f)] 
-    public float bounceAmount = 0.12f;   // Scale stretch when walking
+    public float bounceAmount = 0.12f;   
     [Range(1f, 15f)] 
-    public float tiltAmount = 8f;        // Tilting angle when walking
+    public float tiltAmount = 8f;        
 
     [Header("Idle Breathing Juice")]
-    public float idleBounceSpeed = 3f;      // Slower speed for breathing
+    public float idleBounceSpeed = 3f;      
     [Range(0.01f, 0.1f)] 
-    public float idleBounceAmount = 0.03f;  // Subtle scale stretch for breathing
+    public float idleBounceAmount = 0.03f;  
 
     private float bounceTimer;
 
@@ -74,13 +76,14 @@ public class PlayerController : MonoBehaviour
         if (isWalking)
         {
             LastMoveDirection = moveInput.normalized;
+            SnappedMoveDirection = GetSnappedDirection(LastMoveDirection); // Snap the direction vector
         }
 
-        // Send parameters to the Animator Controller
+        // Send SNAPPED parameters to the Animator Controller to prevent double rendering
         if (animator != null)
         {
-            animator.SetFloat("moveX", LastMoveDirection.x);
-            animator.SetFloat("moveY", LastMoveDirection.y);
+            animator.SetFloat("moveX", SnappedMoveDirection.x);
+            animator.SetFloat("moveY", SnappedMoveDirection.y);
             animator.SetBool("isWalking", isWalking);
         }
 
@@ -90,7 +93,23 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Physics movement remains smooth and diagonal
         rb.linearVelocity = moveInput * moveSpeed; 
+    }
+
+    // Helper to snap diagonal vectors like (0.7, 0.7) to clean (0, 1) or (1, 0) cardinal vectors
+    private Vector2 GetSnappedDirection(Vector2 dir)
+    {
+        if (dir.sqrMagnitude < 0.01f) return Vector2.down;
+
+        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+        {
+            return new Vector2(Mathf.Sign(dir.x), 0f); // Snap to Left/Right
+        }
+        else
+        {
+            return new Vector2(0f, Mathf.Sign(dir.y)); // Snap to Up/Down
+        }
     }
 
     void HandleFlipping()
@@ -106,13 +125,16 @@ public class PlayerController : MonoBehaviour
                 targetScaleX = originalScaleX;  // Face Right
             }
 
-            // Apply scale instantly to prevent near-zero matrix collapses
             if (rigTransform != null)
             {
                 Vector3 rigScale = rigTransform.localScale;
                 rigScale.x = targetScaleX;
                 rigTransform.localScale = rigScale;
             }
+        }
+        else if (Mathf.Abs(moveInput.y) > 0.1f)
+        {
+            targetScaleX = originalScaleX; // Reset to default when moving vertically
         }
     }
 
@@ -137,7 +159,6 @@ public class PlayerController : MonoBehaviour
 
         bounceTimer += Time.deltaTime * currentSpeed;
 
-        // Apply squash and stretch safely to the rig instead of root physics
         if (rigTransform != null)
         {
             Vector3 rigScale = rigTransform.localScale;
@@ -145,7 +166,6 @@ public class PlayerController : MonoBehaviour
             rigTransform.localScale = rigScale;
         }
 
-        // Apply smooth tilt interpolation
         Quaternion targetRotation = Quaternion.Euler(0, 0, targetTilt);
         transform.localRotation = Quaternion.Lerp(transform.localRotation, targetRotation, turnSpeed * Time.deltaTime);
     }

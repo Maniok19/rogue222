@@ -105,23 +105,9 @@ public class PlayerAttack : MonoBehaviour
     {
         if (weaponAnchor == null || playerController == null) return;
 
-        // Detect if the player is currently moving using Unity 6's linearVelocity
-        Rigidbody2D playerRb = GetComponent<Rigidbody2D>();
-        bool isMoving = playerRb != null && playerRb.linearVelocity.sqrMagnitude > 0.05f;
-
-        WeaponOffset activeOffset;
-
-        if (isMoving)
-        {
-            // While walking, use the offset of the walking direction
-            Vector2 dir = playerController.LastMoveDirection;
-            activeOffset = GetActiveOffset(dir);
-        }
-        else
-        {
-            // When stopped walking, force the weapon back to the default front position
-            activeOffset = frontOffset;
-        }
+        // The weapon now always follows the persistent snapped direction (even when idle)
+        Vector2 dir = playerController.SnappedMoveDirection;
+        WeaponOffset activeOffset = GetActiveOffset(dir);
 
         // Apply resting offsets
         weaponAnchor.localPosition = activeOffset.positionOffset;
@@ -141,7 +127,8 @@ public class PlayerAttack : MonoBehaviour
     private IEnumerator PerformSwingAttack()
     {
         isAttacking = true;
-        Vector2 attackDir = playerController.LastMoveDirection;
+        // Use the snapped direction to perform the attack calculations
+        Vector2 attackDir = playerController.SnappedMoveDirection;
 
         // 1. Get the current hand offset profile
         WeaponOffset activeOffset = GetActiveOffset(attackDir);
@@ -149,12 +136,12 @@ public class PlayerAttack : MonoBehaviour
         // 2. Snap the anchor position to the correct hand position immediately
         weaponAnchor.localPosition = activeOffset.positionOffset;
 
-        // 3. Calculate target angle relative to the player's scale (to handle horizontal flipping)
-        float scaleSign = Mathf.Sign(transform.localScale.x);
+        // 3. Calculate target angle relative to the visual rig scale (since we flip the rig instead of root transform)
+        float scaleSign = Mathf.Sign(playerController.rigTransform != null ? playerController.rigTransform.localScale.x : transform.localScale.x);
         Vector2 localAttackDir = new Vector2(attackDir.x * scaleSign, attackDir.y);
         float localTargetAngle = Mathf.Atan2(localAttackDir.y, localAttackDir.x) * Mathf.Rad2Deg;
 
-        // 4. Center the swing rotation around the hand's custom resting angle [3]
+        // 4. Center the swing rotation around the hand's custom resting angle
         float baseSwingAngle = localTargetAngle + activeOffset.rotationOffset;
 
         // Define start and end local rotations based on the hand-aligned base angle
@@ -246,7 +233,8 @@ public class PlayerAttack : MonoBehaviour
         Vector2 attackDir = Vector2.down; 
         if (controller != null)
         {
-            attackDir = Application.isPlaying ? controller.LastMoveDirection : Vector2.down;
+            // Use the snapped direction for accurate editor rendering during Play Mode
+            attackDir = Application.isPlaying ? controller.SnappedMoveDirection : Vector2.down;
         }
 
         float angle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
