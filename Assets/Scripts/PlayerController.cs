@@ -118,23 +118,26 @@ public class PlayerController : MonoBehaviour
         {
             if (moveInput.x < 0)
             {
-                targetScaleX = -originalScaleX; // Face Left
+                targetScaleX = -originalScaleX; // Face à Gauche
             }
             else
             {
-                targetScaleX = originalScaleX;  // Face Right
-            }
-
-            if (rigTransform != null)
-            {
-                Vector3 rigScale = rigTransform.localScale;
-                rigScale.x = targetScaleX;
-                rigTransform.localScale = rigScale;
+                targetScaleX = originalScaleX;  // Face à Droite
             }
         }
         else if (Mathf.Abs(moveInput.y) > 0.1f)
         {
-            targetScaleX = originalScaleX; // Reset to default when moving vertically
+            // Réinitialise l'orientation par défaut quand on va vers le haut/bas
+            targetScaleX = originalScaleX; 
+        }
+
+        // --- CORRECTION : On applique l'échelle ici, en dehors du "if/else", 
+        // pour qu'elle s'actualise AUSSI lors des déplacements verticaux. ---
+        if (rigTransform != null)
+        {
+            Vector3 rigScale = rigTransform.localScale;
+            rigScale.x = targetScaleX;
+            rigTransform.localScale = rigScale;
         }
     }
 

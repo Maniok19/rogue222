@@ -7,9 +7,9 @@ public class PlayerAttack : MonoBehaviour
     [System.Serializable]
     public struct WeaponOffset
     {
-        public Vector3 positionOffset;     // Shift the weapon to align with the hand
-        public float rotationOffset;        // Angled resting rotation in hand
-        public int sortingOrderOffset;      // e.g., -1 to put behind player (back view), +1 for front
+        public Transform handAnchor;        // <-- REMPLACÉ : On glisse ici l'objet Hand_Front, Hand_Back ou Hand_Side
+        public float rotationOffset;        // Rotation de repos dans la main
+        public int sortingOrderOffset;      // e.g., -1 pour mettre derrière le joueur (dos), +1 pour devant
     }
 
     [Header("Weapon Setup")]
@@ -17,9 +17,9 @@ public class PlayerAttack : MonoBehaviour
     public LayerMask enemyLayers;
 
     [Header("Visual Hand Offsets")]
-    public WeaponOffset frontOffset;        // Offsets when facing Down
-    public WeaponOffset backOffset;         // Offsets when facing Up
-    public WeaponOffset sideOffset;         // Offsets when facing Side (automatically mirrors via scale)
+    public WeaponOffset frontOffset;        // Config pour la vue de Face (Bas)
+    public WeaponOffset backOffset;         // Config pour la vue de Dos (Haut)
+    public WeaponOffset sideOffset;         // Config pour la vue de Profil (Côté)
 
     [Header("Visual Elements")]
     public Transform weaponAnchor;       
@@ -28,8 +28,8 @@ public class PlayerAttack : MonoBehaviour
     public float swingDuration = 0.15f;   
 
     [Header("Slash FX")]
-    public GameObject slashVFXPrefab;       // Drag your "SlashVisual" prefab here
-    public float slashDistance = 0.6f;      // How far in front of the player the slash spawns
+    public GameObject slashVFXPrefab;       
+    public float slashDistance = 0.6f;      
 
     [Header("Input Action")]
     public InputActionProperty attackAction;
@@ -42,7 +42,6 @@ public class PlayerAttack : MonoBehaviour
     {
         playerController = GetComponent<PlayerController>();
         
-        // Hide the weapon visual initially if no weapon is equipped
         if (weaponAnchor != null)
             weaponAnchor.gameObject.SetActive(false);
     }
@@ -66,7 +65,6 @@ public class PlayerAttack : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Continuously update the hand positioning while not swinging
         if (equippedWeapon == null || isAttacking) return;
         UpdateWeaponRestingPosition();
     }
@@ -84,7 +82,6 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    // Helper method to get the correct offset config based on direction
     private WeaponOffset GetActiveOffset(Vector2 dir)
     {
         if (Mathf.Abs(dir.x) > 0.1f)
@@ -105,15 +102,18 @@ public class PlayerAttack : MonoBehaviour
     {
         if (weaponAnchor == null || playerController == null) return;
 
-        // The weapon now always follows the persistent snapped direction (even when idle)
         Vector2 dir = playerController.SnappedMoveDirection;
         WeaponOffset activeOffset = GetActiveOffset(dir);
 
-        // Apply resting offsets
-        weaponAnchor.localPosition = activeOffset.positionOffset;
+        // Aligne automatiquement l'arme sur la position locale de l'ancre de la main active
+        if (activeOffset.handAnchor != null)
+        {
+            weaponAnchor.localPosition = activeOffset.handAnchor.localPosition;
+        }
+
         weaponAnchor.localRotation = Quaternion.Euler(0, 0, activeOffset.rotationOffset);
 
-        // Apply sorting order relative to player
+        // Applique l'ordre de tri (sorting order)
         if (weaponSpriteRenderer != null)
         {
             SpriteRenderer playerSR = GetComponent<SpriteRenderer>();
@@ -127,31 +127,27 @@ public class PlayerAttack : MonoBehaviour
     private IEnumerator PerformSwingAttack()
     {
         isAttacking = true;
-        // Use the snapped direction to perform the attack calculations
         Vector2 attackDir = playerController.SnappedMoveDirection;
-
-        // 1. Get the current hand offset profile
         WeaponOffset activeOffset = GetActiveOffset(attackDir);
 
-        // 2. Snap the anchor position to the correct hand position immediately
-        weaponAnchor.localPosition = activeOffset.positionOffset;
+        // Snap immédiat sur la bonne main au début de l'attaque
+        if (activeOffset.handAnchor != null)
+        {
+            weaponAnchor.localPosition = activeOffset.handAnchor.localPosition;
+        }
 
-        // 3. Calculate target angle relative to the visual rig scale (since we flip the rig instead of root transform)
         float scaleSign = Mathf.Sign(playerController.rigTransform != null ? playerController.rigTransform.localScale.x : transform.localScale.x);
         Vector2 localAttackDir = new Vector2(attackDir.x * scaleSign, attackDir.y);
         float localTargetAngle = Mathf.Atan2(localAttackDir.y, localAttackDir.x) * Mathf.Rad2Deg;
 
-        // 4. Center the swing rotation around the hand's custom resting angle
         float baseSwingAngle = localTargetAngle + activeOffset.rotationOffset;
 
-        // Define start and end local rotations based on the hand-aligned base angle
         Quaternion startRotation = Quaternion.Euler(0, 0, baseSwingAngle + (swingAngle / 2f));
         Quaternion endRotation = Quaternion.Euler(0, 0, baseSwingAngle - (swingAngle / 2f));
 
         weaponAnchor.gameObject.SetActive(true);
         weaponAnchor.localRotation = startRotation;
 
-        // Render weapon depth layer during swing
         if (weaponSpriteRenderer != null)
         {
             SpriteRenderer playerSR = GetComponent<SpriteRenderer>();
@@ -161,7 +157,6 @@ public class PlayerAttack : MonoBehaviour
             }
         }
 
-        // Instantiate Slash Effect in front of the player (Slash remains in absolute world space)
         if (slashVFXPrefab != null)
         {
             float worldTargetAngle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
@@ -169,7 +164,6 @@ public class PlayerAttack : MonoBehaviour
             Instantiate(slashVFXPrefab, slashPos, Quaternion.Euler(0, 0, worldTargetAngle));
         }
 
-        // Perform the smooth rotation swing
         float elapsed = 0f;
         while (elapsed < swingDuration)
         {
@@ -182,7 +176,7 @@ public class PlayerAttack : MonoBehaviour
         DetectHits(attackDir);
 
         isAttacking = false;
-        UpdateWeaponRestingPosition(); // Instantly snap back to standard hand orientation
+        UpdateWeaponRestingPosition(); 
     }
 
     private void DetectHits(Vector2 attackDir)
@@ -200,21 +194,16 @@ public class PlayerAttack : MonoBehaviour
 
         foreach (Collider2D enemy in hitEnemies)
         {
-            // 1. Deal Damage
             IDamageable damageable = enemy.GetComponent<IDamageable>();
             if (damageable != null)
             {
                 damageable.TakeDamage(equippedWeapon.damage);
             }
 
-            // 2. Apply Knockback (if hit object is a moving Enemy) [1]
             EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
             if (enemyAI != null)
             {
-                // Calculate the direction pointing from the player's center to the enemy's center [1]
                 Vector2 knockbackDir = (enemy.transform.position - transform.position).normalized;
-                
-                // Trigger the knockback [1]
                 enemyAI.ApplyKnockback(knockbackDir, equippedWeapon.knockbackForce, equippedWeapon.knockbackDuration);
             }
         }
@@ -233,7 +222,6 @@ public class PlayerAttack : MonoBehaviour
         Vector2 attackDir = Vector2.down; 
         if (controller != null)
         {
-            // Use the snapped direction for accurate editor rendering during Play Mode
             attackDir = Application.isPlaying ? controller.SnappedMoveDirection : Vector2.down;
         }
 

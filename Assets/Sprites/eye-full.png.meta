@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 0a98ac7fb796d1440bb22ad9150c64b2
+guid: d51c1d7785b012e428d24e37ab799d6f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -781637292573689941
-    second: Generated_Image_June_13__2026_-_12_24AM-removebg-preview_0
+      213: 2127156880136279598
+    second: eye-full_0
+  - first:
+      213: 4619091339868670605
+    second: eye-full_1
+  - first:
+      213: 4154383806221347126
+    second: eye-full_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,40 +102,71 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Generated_Image_June_13__2026_-_12_24AM-removebg-preview_0
+      name: eye-full_0
       rect:
         serializedVersion: 2
-        x: 85
-        y: 57
-        width: 332
-        height: 388
-      alignment: 9
-      pivot: {x: 0.28100306, y: 0.2885869}
+        x: 0
+        y: 51
+        width: 223
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ba772f016011725f0800000000000000
-      internalID: -781637292573689941
+      spriteID: e261d0e89ed258d10800000000000000
+      internalID: 2127156880136279598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eye-full_1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 112
+        width: 80
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8a84f1c91f4a1040800000000000000
+      internalID: 4619091339868670605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eye-full_2
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 42
+        width: 114
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63965769f0657a930800000000000000
+      internalID: 4154383806221347126
       vertices: []
       indices: 
       edges: []
@@ -138,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: eba8007a60a6d614f98eba58f3a55515
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +185,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Generated_Image_June_13__2026_-_12_24AM-removebg-preview_0: -781637292573689941
+      eye-full_0: 2127156880136279598
+      eye-full_1: 4619091339868670605
+      eye-full_2: 4154383806221347126
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

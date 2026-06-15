@@ -53,6 +53,12 @@ TagManager:
   - name: Weapons
     uniqueID: 407573425
     locked: 0
+  - name: mob1
+    uniqueID: 1750764257
+    locked: 0
+  - name: mob2
+    uniqueID: 3889274349
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []
