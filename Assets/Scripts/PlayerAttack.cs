@@ -7,19 +7,25 @@ public class PlayerAttack : MonoBehaviour
     [System.Serializable]
     public struct WeaponOffset
     {
-        public Transform handAnchor;        // <-- REMPLACÉ : On glisse ici l'objet Hand_Front, Hand_Back ou Hand_Side
-        public float rotationOffset;        // Rotation de repos dans la main
-        public int sortingOrderOffset;      // e.g., -1 pour mettre derrière le joueur (dos), +1 pour devant
+        public Transform handAnchor;        
+        public float rotationOffset;        
+        public int sortingOrderOffset;      
     }
 
-    [Header("Weapon Setup")]
-    public WeaponData equippedWeapon;
+    [Header("Weapon Slots")]
+    private WeaponData[] weaponSlots = new WeaponData[2]; // Index 0: Arme principale, Index 1: Arme secondaire
+    private int currentWeaponIndex = 0;
+
+    // Propriété publique pour récupérer l'arme actuellement active
+    public WeaponData equippedWeapon => weaponSlots[currentWeaponIndex];
+
+    [Header("Physics & Layers")]
     public LayerMask enemyLayers;
 
     [Header("Visual Hand Offsets")]
-    public WeaponOffset frontOffset;        // Config pour la vue de Face (Bas)
-    public WeaponOffset backOffset;         // Config pour la vue de Dos (Haut)
-    public WeaponOffset sideOffset;         // Config pour la vue de Profil (Côté)
+    public WeaponOffset frontOffset;        
+    public WeaponOffset backOffset;         
+    public WeaponOffset sideOffset;         
 
     [Header("Visual Elements")]
     public Transform weaponAnchor;       
@@ -27,12 +33,13 @@ public class PlayerAttack : MonoBehaviour
     public float swingAngle = 90f;       
     public float swingDuration = 0.15f;   
 
-    [Header("Slash FX")]
+    [Header("Slash FX (Melee Only)")]
     public GameObject slashVFXPrefab;       
     public float slashDistance = 0.6f;      
 
-    [Header("Input Action")]
+    [Header("Input Actions")]
     public InputActionProperty attackAction;
+    public InputActionProperty switchWeaponAction; // <-- Action pour changer d'arme (ex: touche 'Q' ou molette)
 
     private PlayerController playerController;
     private float nextAttackTime;
@@ -46,18 +53,42 @@ public class PlayerAttack : MonoBehaviour
             weaponAnchor.gameObject.SetActive(false);
     }
 
-    private void OnEnable() => attackAction.action?.Enable();
-    private void OnDisable() => attackAction.action?.Disable();
+    private void OnEnable()
+    {
+        attackAction.action?.Enable();
+        switchWeaponAction.action?.Enable();
+    }
+
+    private void OnDisable()
+    {
+        attackAction.action?.Disable();
+        switchWeaponAction.action?.Disable();
+    }
 
     private void Update()
     {
+        // Changement d'arme si l'input est pressé et qu'on n'est pas en train d'attaquer
+        if (!isAttacking && switchWeaponAction.action != null && switchWeaponAction.action.WasPressedThisFrame())
+        {
+            SwitchWeapon();
+        }
+
         if (equippedWeapon == null) return;
 
+        // Attaque
         if (!isAttacking && attackAction.action != null && attackAction.action.WasPressedThisFrame())
         {
             if (Time.time >= nextAttackTime)
             {
-                StartCoroutine(PerformSwingAttack());
+                if (equippedWeapon.weaponType == WeaponType.Melee)
+                {
+                    StartCoroutine(PerformSwingAttack());
+                }
+                else if (equippedWeapon.weaponType == WeaponType.Ranged)
+                {
+                    StartCoroutine(PerformRangedAttack());
+                }
+
                 nextAttackTime = Time.time + equippedWeapon.attackCooldown;
             }
         }
@@ -71,14 +102,57 @@ public class PlayerAttack : MonoBehaviour
 
     public void EquipWeapon(WeaponData newWeapon)
     {
-        equippedWeapon = newWeapon;
-        if (weaponSpriteRenderer != null)
+        // Logique de ramassage intelligente :
+        // Si l'emplacement 1 est vide, on l'y met. Sinon, si l'emplacement 2 est vide, on l'y met.
+        // Sinon, on remplace l'arme actuellement tenue.
+        if (weaponSlots[0] == null)
         {
-            weaponSpriteRenderer.sprite = newWeapon.weaponSprite;
+            weaponSlots[0] = newWeapon;
+            currentWeaponIndex = 0;
         }
-        if (weaponAnchor != null)
+        else if (weaponSlots[1] == null)
         {
-            weaponAnchor.gameObject.SetActive(true);
+            weaponSlots[1] = newWeapon;
+            currentWeaponIndex = 1;
+        }
+        else
+        {
+            weaponSlots[currentWeaponIndex] = newWeapon;
+        }
+
+        UpdateWeaponVisuals();
+    }
+
+    private void SwitchWeapon()
+    {
+        // On ne change d'arme que si on possède au moins une autre arme
+        int nextIndex = (currentWeaponIndex + 1) % 2;
+        if (weaponSlots[nextIndex] != null)
+        {
+            currentWeaponIndex = nextIndex;
+            UpdateWeaponVisuals();
+            Debug.Log($"Arme équipée : {equippedWeapon.weaponName}");
+        }
+    }
+
+    private void UpdateWeaponVisuals()
+    {
+        if (equippedWeapon != null)
+        {
+            if (weaponSpriteRenderer != null)
+            {
+                weaponSpriteRenderer.sprite = equippedWeapon.weaponSprite;
+            }
+            if (weaponAnchor != null)
+            {
+                weaponAnchor.gameObject.SetActive(true);
+            }
+            UpdateWeaponRestingPosition();
+        }
+        else
+        {
+            if (weaponAnchor != null)
+                weaponAnchor.gameObject.SetActive(false);
         }
     }
 
@@ -100,12 +174,11 @@ public class PlayerAttack : MonoBehaviour
 
     private void UpdateWeaponRestingPosition()
     {
-        if (weaponAnchor == null || playerController == null) return;
+        if (weaponAnchor == null || playerController == null || equippedWeapon == null) return;
 
         Vector2 dir = playerController.SnappedMoveDirection;
         WeaponOffset activeOffset = GetActiveOffset(dir);
 
-        // Aligne automatiquement l'arme sur la position locale de l'ancre de la main active
         if (activeOffset.handAnchor != null)
         {
             weaponAnchor.localPosition = activeOffset.handAnchor.localPosition;
@@ -113,7 +186,6 @@ public class PlayerAttack : MonoBehaviour
 
         weaponAnchor.localRotation = Quaternion.Euler(0, 0, activeOffset.rotationOffset);
 
-        // Applique l'ordre de tri (sorting order)
         if (weaponSpriteRenderer != null)
         {
             SpriteRenderer playerSR = GetComponent<SpriteRenderer>();
@@ -124,13 +196,13 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    // --- ATTAQUE DE MÊLÉE ---
     private IEnumerator PerformSwingAttack()
     {
         isAttacking = true;
         Vector2 attackDir = playerController.SnappedMoveDirection;
         WeaponOffset activeOffset = GetActiveOffset(attackDir);
 
-        // Snap immédiat sur la bonne main au début de l'attaque
         if (activeOffset.handAnchor != null)
         {
             weaponAnchor.localPosition = activeOffset.handAnchor.localPosition;
@@ -179,6 +251,52 @@ public class PlayerAttack : MonoBehaviour
         UpdateWeaponRestingPosition(); 
     }
 
+    // --- ATTAQUE À DISTANCE ---
+    private IEnumerator PerformRangedAttack()
+    {
+        isAttacking = true;
+        Vector2 attackDir = playerController.SnappedMoveDirection;
+        WeaponOffset activeOffset = GetActiveOffset(attackDir);
+
+        // Aligne l'arme dans la main
+        if (activeOffset.handAnchor != null)
+        {
+            weaponAnchor.localPosition = activeOffset.handAnchor.localPosition;
+        }
+
+        // Oriente l'arme visuellement vers la cible
+        float scaleSign = Mathf.Sign(playerController.rigTransform != null ? playerController.rigTransform.localScale.x : transform.localScale.x);
+        Vector2 localAttackDir = new Vector2(attackDir.x * scaleSign, attackDir.y);
+        float localTargetAngle = Mathf.Atan2(localAttackDir.y, localAttackDir.x) * Mathf.Rad2Deg;
+        weaponAnchor.localRotation = Quaternion.Euler(0, 0, localTargetAngle + activeOffset.rotationOffset);
+
+        // Apparition du projectile
+        if (equippedWeapon.projectilePrefab != null)
+        {
+            // Fait apparaître le projectile légèrement devant le joueur
+            Vector3 spawnPos = weaponAnchor.position + (Vector3)(attackDir * 0.4f);
+            GameObject projGO = Instantiate(equippedWeapon.projectilePrefab, spawnPos, Quaternion.identity);
+            
+            Projectile projectileInstance = projGO.GetComponent<Projectile>();
+            if (projectileInstance != null)
+            {
+                projectileInstance.Setup(
+                    attackDir, 
+                    equippedWeapon.damage, 
+                    equippedWeapon.knockbackForce, 
+                    equippedWeapon.knockbackDuration, 
+                    equippedWeapon.projectileSpeed
+                );
+            }
+        }
+
+        // Temps d'animation de tir de l'arme (recul visuel)
+        yield return new WaitForSeconds(0.12f);
+
+        isAttacking = false;
+        UpdateWeaponRestingPosition();
+    }
+
     private void DetectHits(Vector2 attackDir)
     {
         float angle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
@@ -217,7 +335,7 @@ public class PlayerAttack : MonoBehaviour
             controller = GetComponent<PlayerController>();
         }
 
-        if (equippedWeapon == null) return;
+        if (equippedWeapon == null || equippedWeapon.weaponType == WeaponType.Ranged) return;
 
         Vector2 attackDir = Vector2.down; 
         if (controller != null)

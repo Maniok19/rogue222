@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dbcaf10a6c9dad4da1d86ba9b3b5221, type: 3}
+  m_Name: Bow
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  weaponName: Bow
+  weaponSprite: {fileID: 2645325841951691889, guid: 068d6821df1950a4ca48c6ee1d90edce, type: 3}
+  weaponType: 1
+  damage: 10
+  attackCooldown: 0.2
+  hitboxSize: {x: 0.75, y: 0.93}
+  hitboxOffset: {x: 0.71, y: 0}
+  projectilePrefab: {fileID: 4968273905487533575, guid: bc0d2a85f2249824fbafff7b24ccc3e8, type: 3}
+  projectileSpeed: 12
+  knockbackForce: 10
+  knockbackDuration: 0.15

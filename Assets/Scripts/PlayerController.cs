@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    private bool isInputFrozen = false;
     [Header("Rig Reference")]
     public Transform rigTransform; 
     public Vector2 LastMoveDirection { get; private set; } = Vector2.down; // Raw direction
@@ -66,7 +67,8 @@ public class PlayerController : MonoBehaviour
     {
         moveInput = Vector2.zero;
 
-        if (moveAction.action != null)
+        // On ne lit l'input que si le joueur n'est pas gelé
+        if (!isInputFrozen && moveAction.action != null)
         {
             moveInput = moveAction.action.ReadValue<Vector2>();
         }
@@ -171,5 +173,22 @@ public class PlayerController : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.Euler(0, 0, targetTilt);
         transform.localRotation = Quaternion.Lerp(transform.localRotation, targetRotation, turnSpeed * Time.deltaTime);
+    }
+    public void SetInputActive(bool active)
+    {
+        isInputFrozen = !active;
+        
+        if (isInputFrozen)
+        {
+            moveInput = Vector2.zero;
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero; // Arrête immédiatement le mouvement physique
+            }
+            if (animator != null)
+            {
+                animator.SetBool("isWalking", false); // Arrête l'animation de marche
+            }
+        }
     }
 }
