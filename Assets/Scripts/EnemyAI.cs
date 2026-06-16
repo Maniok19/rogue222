@@ -52,6 +52,8 @@ public class EnemyAI : MonoBehaviour
     private bool isWandering;
     private float wanderTimer;
     private Vector2 wanderDirection;
+    private float speedModifier = 1f; // 1 = vitesse normale, 0.5 = 50% de ralentissement
+
 
     private void Start()
     {
@@ -242,5 +244,15 @@ public class EnemyAI : MonoBehaviour
                 attackTimer = attackCooldown; 
             }
         }
+    }
+
+    public void ApplySlow(float slowFactor)
+    {
+        speedModifier = slowFactor;
+    }
+
+    public void RemoveSlow()
+    {
+        speedModifier = 1f;
     }
 }

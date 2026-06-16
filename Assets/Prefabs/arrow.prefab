@@ -179,3 +179,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 980e3613927cfa74a848552f72ab748a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
+  maxLifetime: 3
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  homingRadius: 6
+  homingForce: 5
+  trailPrefab: {fileID: 3559243464453194896, guid: 41c0f262dccefc64bb64c0395158a0ed, type: 3}
