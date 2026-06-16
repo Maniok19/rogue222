@@ -5,7 +5,6 @@ public class CameraShake : MonoBehaviour
 {
     public static CameraShake Instance { get; private set; }
 
-    private Vector3 originalLocalPos;
     private Coroutine activeShake;
 
     private void Awake()
@@ -20,10 +19,7 @@ public class CameraShake : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        originalLocalPos = transform.localPosition;
-    }
+    // No Start() method needed anymore!
 
     public void Shake(float duration, float magnitude)
     {
@@ -37,21 +33,31 @@ public class CameraShake : MonoBehaviour
     private IEnumerator DoShake(float duration, float magnitude)
     {
         float elapsed = 0f;
+        Vector3 lastOffset = Vector3.zero;
 
         while (elapsed < duration)
         {
-            // Pick a random offset inside a small range
+            // 1. Remove the previous frame's offset first to restore 
+            // the camera to wherever your follow script has moved it.
+            transform.localPosition -= lastOffset;
+
+            // 2. Generate a new random offset
             float x = Random.Range(-1f, 1f) * magnitude;
             float y = Random.Range(-1f, 1f) * magnitude;
+            Vector3 newOffset = new Vector3(x, y, 0f);
 
-            // Offset the local position (leaving the parent follow script undisturbed)
-            transform.localPosition = new Vector3(originalLocalPos.x + x, originalLocalPos.y + y, originalLocalPos.z);
+            // 3. Apply the new offset
+            transform.localPosition += newOffset;
+            
+            // 4. Store this offset to subtract it on the next frame
+            lastOffset = newOffset;
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // Return camera back to its exact local center
-        transform.localPosition = originalLocalPos;
+        // 5. Clean up the final offset to return the camera exactly back to normal
+        transform.localPosition -= lastOffset;
+        activeShake = null;
     }
 }

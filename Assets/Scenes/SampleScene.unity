@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &170552388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 170552389}
+  m_Layer: 0
+  m_Name: center
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &170552389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170552388}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.03, y: 3.88, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 785989060}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &196652254
 GameObject:
   m_ObjectHideFlags: 0
@@ -12673,7 +12704,7 @@ Transform:
   m_GameObject: {fileID: 419593941}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5, y: -1.68, z: 0}
+  m_LocalPosition: {x: 0.8900001, y: 1.1899999, z: 2.47}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12784,6 +12815,7 @@ GameObject:
   - component: {fileID: 519420030}
   - component: {fileID: 519420034}
   - component: {fileID: 519420036}
+  - component: {fileID: 519420037}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -12934,6 +12966,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraZoomController
   targetCamera: {fileID: 519420031}
+  cameraFollowScript: {fileID: 0}
+--- !u!114 &519420037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f58eb039c7b832943a7d75578a6b4210, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraController
+  target: {fileID: 972674009}
+  smoothSpeed: 5
+  horizontalMargin: 0.25
+  verticalMargin: 0.45
+  minZoom: 3
+  maxZoom: 15
+  zoomSpeed: 5
+  zoomSensitivity: 0.01
+  zoomAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Zoom
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 41fbc5df-2fae-4d7d-b0a0-83375c818208
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
 --- !u!1 &550402270
 GameObject:
   m_ObjectHideFlags: 0
@@ -14266,10 +14331,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoomController
   enemySpawner: {fileID: 1353206581}
   cameraController: {fileID: 519420036}
-  zoomOutSize: 8
-  zoomDuration: 0.8
-  waitTimeBeforeSpawn: 0.5
-  waitTimeAfterSpawn: 0.5
+  cameraTargetPoint: {fileID: 170552389}
+  zoomOutSize: 5
+  zoomDuration: 2
+  waitTimeBeforeSpawn: 0
+  waitTimeAfterSpawn: 2
 --- !u!61 &785989059
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14328,7 +14394,8 @@ Transform:
   m_LocalPosition: {x: 0.42, y: 9.68, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 170552389}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &793596919
@@ -15842,7 +15909,7 @@ Transform:
   m_GameObject: {fileID: 1268852729}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.19, y: -0.87, z: 0}
+  m_LocalPosition: {x: 1.7, y: 1.9999999, z: 2.47}
   m_LocalScale: {x: 0.44399884, y: 0.44399884, z: 0.44399884}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17051,11 +17118,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4842547469805818669, guid: 4d16de36b8d89454dba2d11358b334bb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.79
+      value: 5.44
       objectReference: {fileID: 0}
     - target: {fileID: 4842547469805818669, guid: 4d16de36b8d89454dba2d11358b334bb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.41
+      value: -1.64
       objectReference: {fileID: 0}
     - target: {fileID: 4842547469805818669, guid: 4d16de36b8d89454dba2d11358b334bb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17886,7 +17953,7 @@ Transform:
   m_GameObject: {fileID: 896102875995209640}
   serializedVersion: 2
   m_LocalRotation: {x: 0.33757454, y: -0.008215403, z: 0.0029463859, w: 0.9412584}
-  m_LocalPosition: {x: -3.4, y: -1.82, z: -2.5}
+  m_LocalPosition: {x: 2.49, y: 1.05, z: -0.03}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17910,11 +17977,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4842547469805818669, guid: 4d16de36b8d89454dba2d11358b334bb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.99
+      value: -4.98
       objectReference: {fileID: 0}
     - target: {fileID: 4842547469805818669, guid: 4d16de36b8d89454dba2d11358b334bb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.27
+      value: 2.48
       objectReference: {fileID: 0}
     - target: {fileID: 4842547469805818669, guid: 4d16de36b8d89454dba2d11358b334bb, type: 3}
       propertyPath: m_LocalPosition.z
